@@ -22,6 +22,10 @@ const menuItemSchema = mongoose.Schema({
     description: {
         type: String,
         required: [true, 'Please add a description']
+    },
+    isAvailable: {
+        type: Boolean,
+        required: [true, 'Please confirm if this item is available']
     }
 }, {
     timestamps: true

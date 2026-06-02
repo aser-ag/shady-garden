@@ -20,6 +20,11 @@ const reservationSchema = mongoose.Schema({
         required: [true, 'Please add the status of the reservation'],
         enum: ['pending', 'confirmed', 'canceled', 'completed'],
         default: 'pending'
+    },
+    isDeleted: {
+        type: Boolean,
+        required: [true],
+        default: false
     }
 }, {
     timestamps: true
