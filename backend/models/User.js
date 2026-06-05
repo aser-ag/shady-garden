@@ -30,9 +30,9 @@ const userSchema = mongoose.Schema({
 
 });
 
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function() {
     if (!this.isModified('password')) {
-        return next();
+        return;
     }
 
     try {
@@ -40,9 +40,8 @@ userSchema.pre('save', async function(next) {
 
         this.password = await bcrypt.hash(this.password, salt);
 
-        next();
     } catch (error) {
-        next(error);
+        throw error;
     }
 })
 

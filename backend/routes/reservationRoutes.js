@@ -12,8 +12,8 @@ const router = express.Router();
 
 router.get('/', getAllReservations);
 router.get('/my', protect, getUserReservations);
-router.post('/', createReservation);
-router.patch('/:id', updateReservation);
-router.delete('/:id', deleteReservation);
+router.post('/', protect, createReservation);
+router.patch('/:id', protect, updateReservation);
+router.delete('/:id', protect, deleteReservation);
 
 export default router;

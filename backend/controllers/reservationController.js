@@ -24,7 +24,11 @@ export const getUserReservations = async (req, res) => {
 
 export const createReservation = async (req, res) => {
     try {
-        const newReservation = await Reservation.create(req.body);
+        const reservationData = {
+            ...req.body,
+            user: req.user._id
+        };
+        const newReservation = await Reservation.create(reservationData);
         res.status(201).json(newReservation);
 
     } catch (error) {
@@ -38,14 +42,22 @@ export const updateReservation = async (req, res) => {
     }
 
     try {
+        const reservation = await Reservation.findById(req.params.id);
+
+        if (!reservation) {
+            return res.status(404).json({ message: "Reservation not found" });
+        }
+
+        if (reservation.user.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: "Not authorized to update this reservation" });
+        }
+
         const updatedReservation = await Reservation.findByIdAndUpdate(
             req.params.id,
             req.body,
             { new: true, runValidators: true}
         );
-        if (!updatedReservation) {
-            return res.status(404).json( {error: "Reservation not found"} );
-        }
+
         res.json(updatedReservation);
 
     } catch (error) {
@@ -59,11 +71,17 @@ export const deleteReservation = async (req, res) => {
     }
 
     try {
-        const deletedReservation = await Reservation.findByIdAndDelete(req.params.id);
+        const reservation = await Reservation.findById(req.params.id);
 
-        if (!deletedReservation) {
-            return res.status(404).json( {error: "Reservation not found"} );
+        if (!reservation) {
+            return res.status(404).json({ message: "Reservation not found" });
         }
+
+        if (reservation.user.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: "Not authorized to delete this reservation"})
+        }
+
+        const deletedReservation = await Reservation.findByIdAndDelete(req.params.id);
 
         res.json(deletedReservation);
 
