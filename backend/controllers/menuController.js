@@ -3,7 +3,13 @@ import mongoose from 'mongoose';
 
 export const getMenu = async (req, res) => {
     try {
-        const menu = await MenuItem.find({ isAvailable: true });
+        const filter = { isAvailable: true };
+        
+        if (req.query.category) {
+            filter.category = req.query.category;
+        }
+
+        const menu = await MenuItem.find(filter);
         res.json(menu);
     } catch (error) {
         res.status(500).json({ message: "Server Error", error: error.message });

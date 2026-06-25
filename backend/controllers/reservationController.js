@@ -3,8 +3,32 @@ import mongoose from 'mongoose';
 
 export const getAllReservations = async (req, res) => {
     try {
-        const reservation = await Reservation.find( {} );
-        res.json(reservation);
+        const filter = {};
+
+        if (req.query.datetime) {
+            filter.datetime = new Date(req.query.datetime);
+
+        } else if (req.query.date) {
+            const startDate = new Date(req.query.date);
+            const endDate = new Date(startDate);
+            endDate.setDate(endDate.getDate() + 1);
+
+            filter.datetime = {
+                $gte: startDate,
+                $lt: endDate
+            };
+        }
+
+        if (req.query.status) {
+            filter.status = req.query.status;
+        }
+
+        if (req.query.user) {
+            filter.user = req.query.user;
+        }
+
+        const reservations = await Reservation.find(filter).populate('user', 'name email');
+        res.json(reservations);
 
     } catch (error) {
         res.status(500).json( {message: "Server error", error: error.message});
